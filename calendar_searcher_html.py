@@ -135,6 +135,10 @@ def format_event_for_html(event):
     location = event.get('location', '')
     status = event.get('status', 'confirmed')
     
+    # Check if title contains "Tentative" and override status
+    if 'tentative' in title.lower():
+        status = 'tentative'
+    
     # Parse start and end times
     start = event.get('start', {})
     end = event.get('end', {})
