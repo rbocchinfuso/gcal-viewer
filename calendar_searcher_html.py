@@ -205,7 +205,7 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Calendar Events</title>
+    <title>2026 Moto Events</title>
     <style>
         :root {
             --bg-primary: #0f0f13;
@@ -266,9 +266,16 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         }
         
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
         h1 {
             color: var(--text-primary);
-            margin-bottom: 15px;
             font-size: 2.5em;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -278,24 +285,16 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             background-clip: text;
         }
         
-        .search-info {
-            background: var(--bg-primary);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            text-align: left;
-            border: 1px solid var(--border-color);
+        .moto-icon {
+            width: 50px;
+            height: 50px;
+            fill: url(#gradient);
         }
         
-        .search-info p {
-            margin: 8px 0;
+        .subtitle {
             color: var(--text-secondary);
-            font-size: 0.95em;
-        }
-        
-        .search-info strong {
-            color: var(--accent-primary);
-            font-weight: 600;
+            font-size: 1.1em;
+            margin-top: 10px;
         }
         
         .event-count {
@@ -551,9 +550,22 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
 <body>
     <div class="container">
         <header>
-            <h1>📅 Google Calendar Events</h1>
+            <svg style="display:none;">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="header-content">
+                <svg class="moto-icon" viewBox="0 0 24 24">
+                    <path d="M19.44,12.93L16.86,7.76C16.5,7.05 15.77,6.61 14.97,6.61H13.5V5.5A1.5,1.5 0 0,0 12,4A1.5,1.5 0 0,0 10.5,5.5V6.61H9.03C8.23,6.61 7.5,7.05 7.14,7.76L4.56,12.93C4.19,13.66 4.27,14.53 4.77,15.18C5.27,15.83 6.06,16.21 6.89,16.21H8.5V18.5A1.5,1.5 0 0,0 10,20A1.5,1.5 0 0,0 11.5,18.5V16.21H12.5V18.5A1.5,1.5 0 0,0 14,20A1.5,1.5 0 0,0 15.5,18.5V16.21H17.11C17.94,16.21 18.73,15.83 19.23,15.18C19.73,14.53 19.81,13.66 19.44,12.93M12,5.5C12.28,5.5 12.5,5.72 12.5,6V6.61H11.5V6C11.5,5.72 11.72,5.5 12,5.5M8.5,14.71H6.89C6.67,14.71 6.47,14.61 6.34,14.44C6.21,14.27 6.19,14.05 6.28,13.86L8.86,8.69C8.95,8.5 9.15,8.39 9.37,8.39H10.5V14.71H8.5M15.5,14.71H13.5V8.39H14.63C14.85,8.39 15.05,8.5 15.14,8.69L17.72,13.86C17.81,14.05 17.79,14.27 17.66,14.44C17.53,14.61 17.33,14.71 17.11,14.71H15.5M5.5,13A2.5,2.5 0 0,0 3,15.5A2.5,2.5 0 0,0 5.5,18A2.5,2.5 0 0,0 8,15.5A2.5,2.5 0 0,0 5.5,13M5.5,16.5A1,1 0 0,1 4.5,15.5A1,1 0 0,1 5.5,14.5A1,1 0 0,1 6.5,15.5A1,1 0 0,1 5.5,16.5M18.5,13A2.5,2.5 0 0,0 16,15.5A2.5,2.5 0 0,0 18.5,18A2.5,2.5 0 0,0 21,15.5A2.5,2.5 0 0,0 18.5,13M18.5,16.5A1,1 0 0,1 17.5,15.5A1,1 0 0,1 18.5,14.5A1,1 0 0,1 19.5,15.5A1,1 0 0,1 18.5,16.5Z" />
+                </svg>
+                <h1>2026 Moto Events</h1>
+            </div>
+            <p class="subtitle">Upcoming schedule and gatherings</p>
             <div class="event-count">{{EVENT_COUNT}} event(s) found</div>
-            {{SEARCH_INFO}}
         </header>
         
         <div class="events-grid">
@@ -570,14 +582,8 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
 </html>
 """
     
-    # Generate search info HTML
+    # Generate search info HTML (removed - no longer displaying search params in header)
     search_info_html = ""
-    if search_params:
-        search_info_html = '<div class="search-info">'
-        for key, value in search_params.items():
-            if value:
-                search_info_html += f'<p><strong>{key.replace("_", " ").title()}:</strong> {value}</p>'
-        search_info_html += '</div>'
     
     # Generate event cards
     event_cards_html = ""
@@ -630,7 +636,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
     
     # Replace placeholders
     html_content = html_template.replace('{{EVENT_COUNT}}', str(len(events_data)))
-    html_content = html_content.replace('{{SEARCH_INFO}}', search_info_html)
     html_content = html_content.replace('{{EVENT_CARDS}}', event_cards_html)
     html_content = html_content.replace('{{NO_EVENTS}}', no_events_html)
     html_content = html_content.replace('{{GENERATED_DATE}}', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
