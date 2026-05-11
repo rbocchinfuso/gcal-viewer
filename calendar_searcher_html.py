@@ -193,7 +193,7 @@ def format_event_for_html(event):
 
 
 def generate_html(events_data, output_file='calendar_events.html', search_params=None):
-    """Generate a pretty HTML page with events."""
+    """Generate a pretty HTML page with events in dark mode."""
     
     html_template = """
 <!DOCTYPE html>
@@ -203,6 +203,24 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Calendar Events</title>
     <style>
+        :root {
+            --bg-primary: #0f0f13;
+            --bg-secondary: #1a1a24;
+            --bg-card: #252533;
+            --bg-hover: #2d2d3d;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8c9;
+            --text-muted: #6b6b7b;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-color: #3a3a4a;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 8px 30px rgba(99, 102, 241, 0.2);
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -210,10 +228,11 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
             min-height: 100vh;
             padding: 20px;
+            color: var(--text-primary);
         }
         
         .container {
@@ -222,192 +241,288 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
         }
         
         header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
             margin-bottom: 30px;
             text-align: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 10px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
             font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .search-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
             text-align: left;
+            border: 1px solid var(--border-color);
         }
         
         .search-info p {
-            margin: 5px 0;
-            color: #666;
+            margin: 8px 0;
+            color: var(--text-secondary);
+            font-size: 0.95em;
         }
         
         .search-info strong {
-            color: #333;
+            color: var(--accent-primary);
+            font-weight: 600;
         }
         
         .event-count {
-            background: #667eea;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 12px 28px;
+            border-radius: 30px;
             display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
         
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
         }
         
         .event-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 5px solid #2196F3;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
         }
         
         .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent-primary);
         }
         
         .event-card.confirmed {
-            border-left-color: #4CAF50;
+            border-left-color: var(--success);
         }
         
         .event-card.tentative {
-            border-left-color: #FF9800;
+            border-left-color: var(--warning);
         }
         
         .event-card.cancelled {
-            border-left-color: #F44336;
-            opacity: 0.7;
+            border-left-color: var(--danger);
+            opacity: 0.75;
         }
         
         .event-title {
-            font-size: 1.4em;
-            color: #333;
-            margin-bottom: 15px;
+            font-size: 1.35em;
+            color: var(--text-primary);
+            margin-bottom: 18px;
             font-weight: 600;
+            line-height: 1.4;
+            letter-spacing: -0.3px;
         }
         
         .event-time {
-            background: #f0f4ff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            color: #667eea;
+            background: var(--bg-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            color: var(--accent-primary);
             font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+        
+        .event-time div {
+            margin: 6px 0;
         }
         
         .event-details {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         .detail-row {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 10px;
-            color: #555;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 0.95em;
         }
         
         .detail-icon {
-            margin-right: 10px;
+            margin-right: 12px;
             min-width: 20px;
+            font-size: 1.1em;
         }
         
         .event-description {
-            background: #fafafa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            color: #666;
-            line-height: 1.6;
-            max-height: 150px;
+            background: var(--bg-primary);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-height: 140px;
             overflow-y: auto;
+            border: 1px solid var(--border-color);
+            font-size: 0.92em;
+        }
+        
+        .event-description::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .event-description::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 3px;
+        }
+        
+        .event-description::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
         }
         
         .event-attendees {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
         }
         
         .attendee-tag {
             display: inline-block;
-            background: #e3f2fd;
-            color: #1976D2;
-            padding: 5px 12px;
-            border-radius: 15px;
-            margin: 3px;
-            font-size: 0.85em;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 0.82em;
+            font-weight: 500;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .attendee-tag:hover {
+            background: rgba(99, 102, 241, 0.25);
+            border-color: var(--accent-primary);
         }
         
         .organizer-badge {
-            background: #fff3e0;
-            color: #F57C00;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85em;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82em;
+            font-weight: 500;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 12px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
         
         .status-badge {
             display: inline-block;
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 20px;
             color: white;
-            font-weight: bold;
-            font-size: 0.85em;
-            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 0.8em;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .view-link {
-            display: inline-block;
-            background: #667eea;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
             text-decoration: none;
-            margin-top: 15px;
-            transition: background 0.3s ease;
+            margin-top: 18px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.92em;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         
         .view-link:hover {
-            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
         }
         
         .no-events {
-            background: white;
-            padding: 50px;
-            border-radius: 15px;
+            background: var(--bg-card);
+            padding: 60px 40px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
         }
         
         .no-events h2 {
-            color: #666;
+            color: var(--text-secondary);
             margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .no-events p {
+            color: var(--text-muted);
+            font-size: 1.05em;
+        }
+        
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
         
         footer {
             text-align: center;
-            margin-top: 40px;
-            color: white;
-            padding: 20px;
+            margin-top: 50px;
+            color: var(--text-muted);
+            padding: 30px;
+            font-size: 0.9em;
+            border-top: 1px solid var(--border-color);
         }
         
         @media (max-width: 768px) {
@@ -416,7 +531,15 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             }
             
             h1 {
-                font-size: 1.8em;
+                font-size: 1.9em;
+            }
+            
+            header {
+                padding: 30px 20px;
+            }
+            
+            .event-card {
+                padding: 22px;
             }
         }
     </style>
@@ -465,12 +588,12 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             location_html = f'<div class="detail-row"><span class="detail-icon">📍</span><span>{event["location"]}</span></div>' if event['location'] else ''
             
             event_cards_html += f"""
-            <div class="event-card {status_class}" style="border-left-color: {event['status_color']}">
+            <div class="event-card {status_class}">
                 <span class="status-badge" style="background: {event['status_color']}">{event['status'].title()}</span>
                 <div class="event-title">{event['title']}</div>
                 <div class="event-time">
-                    <div>Start: {event['start']}</div>
-                    <div>End: {event['end']}</div>
+                    <div>⏰ Start: {event['start']}</div>
+                    <div>⏰ End: {event['end']}</div>
                     {"<div>(All-day event)</div>" if event['is_all_day'] else ''}
                 </div>
                 {location_html}
@@ -482,7 +605,9 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
                     </div>
                     <div class="organizer-badge">🎯 Organizer: {event['organizer']}</div>
                 </div>
-                <a href="{event['html_link']}" target="_blank" class="view-link">View in Calendar</a>
+                <a href="{event['html_link']}" target="_blank" class="view-link">
+                    🔗 View in Calendar
+                </a>
             </div>
             """
     else:
@@ -493,6 +618,7 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
     if not events_data:
         no_events_html = """
         <div class="no-events">
+            <div class="empty-icon">📭</div>
             <h2>No events found</h2>
             <p>Try adjusting your search criteria or date range.</p>
         </div>
