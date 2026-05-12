@@ -1,143 +1,137 @@
-# Google Calendar Event Searcher
+# Google Calendar Viewer - Dockerized
 
-A Python application to search and retrieve Google Calendar events using various criteria.
+A containerized Flask application that pulls Google Calendar events and serves them as a modern dark-mode HTML page. The application runs a daily scheduled task to update the calendar view.
 
 ## Features
 
-- Search events by date range (relative or absolute)
-- Free-text search across event summary, description, and location
-- Filter by attendee email
-- Filter by location substring
-- Filter by event status (confirmed, tentative, cancelled)
-- Output in human-readable format or JSON
-- Support for multiple calendars
+- **Daily Updates**: Automatically fetches calendar events once per day at 8:00 AM
+- **Modern Dark Mode UI**: Clean, responsive design with color-coded event statuses
+- **Search Filtering**: Filter events by keyword, date range, and status
+- **Flask Web Server**: Serves the generated HTML page on port 5000
+- **Docker Compose**: Easy deployment with persistent storage for tokens and output
 
-## Installation
+## Prerequisites
 
-1. **Install dependencies:**
+1. **Google Calendar API Setup**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable the Google Calendar API
+   - Create OAuth 2.0 credentials (Desktop app)
+   - Download `credentials.json`
+
+2. **Directory Structure**:
+   ```
+   .
+   ├── credentials/          # Place credentials.json here
+   ├── output/              # Generated HTML pages stored here
+   ├── token.json           # OAuth token (auto-generated)
+   ├── calendar_searcher_html.py
+   ├── app.py
+   ├── Dockerfile
+   ├── docker-compose.yml
+   └── requirements.txt
+   ```
+
+## Quick Start
+
+### 1. Setup Credentials
+
+Place your `credentials.json` file in the `credentials/` directory:
 
 ```bash
+mkdir -p credentials
+cp /path/to/your/credentials.json credentials/
+```
+
+### 2. Build and Run with Docker Compose
+
+```bash
+docker-compose up --build
+```
+
+The application will:
+- Build the Docker image
+- Start the Flask server on port 5000
+- Run the initial calendar fetch
+- Schedule daily updates at 8:00 AM
+
+### 3. First-Time Authentication
+
+On first run, check the logs for an authentication URL:
+
+```bash
+docker-compose logs -f
+```
+
+Click the URL, authenticate with Google, and copy the authorization code back if needed. The OAuth token will be saved to `token.json` for subsequent runs.
+
+### 4. View the Calendar
+
+Open your browser to: http://localhost:5000
+
+## Configuration
+
+Environment variables can be set in `docker-compose.yml`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SEARCH_QUERY` | `moto` | Keyword to search for in events |
+| `SEARCH_DAYS` | `30` | Number of days to look ahead |
+| `TZ` | `America/New_York` | Timezone for scheduling |
+
+## Manual Usage (Without Docker)
+
+```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the Flask app directly
+python app.py
+
+# Or run the calendar searcher manually
+python calendar_searcher_html.py -q "moto" --days 30
 ```
 
-2. **Set up Google Cloud credentials:**
+## Customizing the Schedule
 
-   a. Go to [Google Cloud Console](https://console.cloud.google.com/)
-   
-   b. Create a new project or select an existing one
-   
-   c. Enable the Google Calendar API:
-      - Navigate to "APIs & Services" > "Library"
-      - Search for "Google Calendar API" and enable it
-   
-   d. Create OAuth 2.0 credentials:
-      - Go to "APIs & Services" > "Credentials"
-      - Click "Create Credentials" > "OAuth client ID"
-      - Select "Desktop app" as the application type
-      - Download the credentials JSON file
-   
-   e. Save the credentials file as `credentials.json` in the same directory as this script, or specify its path using the `--credentials` flag.
+To change the daily run time, edit `app.py`:
 
-3. **First-time authentication:**
-
-   When you run the script for the first time, it will open a browser window asking you to authorize the application. Follow the prompts to grant access to your calendar.
-
-## Usage
-
-### Basic Examples
-
-**Search events in the next 7 days:**
-```bash
-python calendar_searcher.py --days 7
+```python
+schedule.every().day.at("08:00").do(run_calendar_search)
+# Change "08:00" to your preferred time (24-hour format)
 ```
 
-**Search for events with specific keyword:**
-```bash
-python calendar_searcher.py --query "team meeting" --days 30
-```
+## Persistent Storage
 
-**Search events with a specific attendee:**
-```bash
-python calendar_searcher.py --attendee "john@example.com" --days 30
-```
-
-**Search events in a date range:**
-```bash
-python calendar_searcher.py --start "2024-01-01" --end "2024-01-31"
-```
-
-**Filter by location:**
-```bash
-python calendar_searcher.py --location "Conference Room" --days 30 --verbose
-```
-
-### Advanced Options
-
-**Output as JSON:**
-```bash
-python calendar_searcher.py --days 7 --json
-```
-
-**Search a specific calendar:**
-```bash
-python calendar_searcher.py --calendar-id "your-calendar-id@group.calendar.google.com" --days 30
-```
-
-**Filter by event status:**
-```bash
-python calendar_searcher.py --status confirmed --days 7
-```
-
-**Verbose output with all details:**
-```bash
-python calendar_searcher.py --days 7 --verbose
-```
-
-### Command-Line Arguments
-
-| Argument | Description |
-|----------|-------------|
-| `--credentials PATH` | Path to Google OAuth credentials file (default: credentials.json) |
-| `--days N` | Number of days from now to search |
-| `--start DATE` | Start date (YYYY-MM-DD or ISO format) |
-| `--end DATE` | End date (YYYY-MM-DD or ISO format) |
-| `--query TEXT` | Free text search (searches summary, description, location) |
-| `--keyword TEXT` | Filter results by keyword in title/description |
-| `--attendee EMAIL` | Filter by attendee email address |
-| `--location TEXT` | Filter by location substring |
-| `--status STATUS` | Filter by event status (confirmed, tentative, cancelled) |
-| `--max-results N` | Maximum number of events to return (default: 250) |
-| `--calendar-id ID` | Calendar ID to search (default: primary) |
-| `--verbose` | Show detailed event information |
-| `--json` | Output results as JSON |
-
-## Date Formats
-
-The application accepts various date formats:
-- `YYYY-MM-DD` (e.g., `2024-01-15`)
-- `YYYY-MM-DDTHH:MM:SS` (e.g., `2024-01-15T09:00:00`)
-- `YYYY-MM-DD HH:MM:SS` (e.g., `2024-01-15 09:00:00`)
-- `DD/MM/YYYY` (e.g., `15/01/2024`)
-- `MM/DD/YYYY` (e.g., `01/15/2024`)
-
-## Security Notes
-
-- The `token.json` file contains your OAuth refresh token. Keep it secure and do not share it.
-- The application requests read-only access to your calendar.
-- You can revoke access at any time from your Google Account settings.
+The following are persisted via Docker volumes:
+- `./output/` - Generated HTML files
+- `./token.json` - OAuth authentication token
+- `./credentials/` - Google API credentials
 
 ## Troubleshooting
 
-**Error: Credentials file not found**
-- Ensure `credentials.json` is in the current directory or specify the path with `--credentials`
+### No Events Showing
+- Ensure `credentials.json` is in the `credentials/` folder
+- Check that the Google Calendar API is enabled
+- Verify the search query matches event titles
+- Check logs for authentication errors
 
-**Error: Token expired**
-- Delete `token.json` and re-run the application to re-authenticate
+### Authentication Issues
+- Delete `token.json` to force re-authentication
+- Ensure OAuth consent screen is configured in Google Cloud Console
+- Check that your Google account has access to the calendar
 
-**Error: Insufficient permissions**
-- Make sure you've enabled the Google Calendar API in your Google Cloud project
-- Verify that your OAuth credentials have the correct scopes
+### Container Won't Start
+```bash
+docker-compose down
+docker-compose up --build
+```
+
+## API Endpoints
+
+- `GET /` - Serves the generated calendar HTML page
+- `GET /static/<path>` - Serves static assets (if added)
 
 ## License
 
-This project is provided as-is for educational purposes.
+MIT

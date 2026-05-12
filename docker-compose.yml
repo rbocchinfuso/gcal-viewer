@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  calendar-viewer:
+    build: .
+    container_name: moto-calendar-viewer
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount Google credentials (you need to place credentials.json in ./credentials)
+      - ./credentials:/app/credentials
+      # Persist generated HTML and token
+      - ./output:/app/output
+      - ./token.json:/app/token.json
+    environment:
+      - SEARCH_QUERY=moto
+      - SEARCH_DAYS=30
+      - TZ=America/New_York
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
