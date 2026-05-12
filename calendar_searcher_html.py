@@ -424,42 +424,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             border-radius: 3px;
         }
         
-        .event-attendees {
-            margin-top: 18px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .attendee-tag {
-            display: inline-block;
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--accent-primary);
-            padding: 6px 14px;
-            border-radius: 20px;
-            margin: 4px;
-            font-size: 0.82em;
-            font-weight: 500;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            transition: all 0.2s ease;
-        }
-        
-        .attendee-tag:hover {
-            background: rgba(99, 102, 241, 0.25);
-            border-color: var(--accent-primary);
-        }
-        
-        .organizer-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.82em;
-            font-weight: 500;
-            display: inline-block;
-            margin-top: 12px;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-        
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
@@ -470,27 +434,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             margin-bottom: 16px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        
-        .view-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            margin-top: 18px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.92em;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-        
-        .view-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
         }
         
         .no-events {
@@ -516,16 +459,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
         .empty-icon {
             font-size: 4em;
             margin-bottom: 20px;
-            opacity: 0.5;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            color: var(--text-muted);
-            padding: 30px;
-            font-size: 0.9em;
-            border-top: 1px solid var(--border-color);
         }
         
         @media (max-width: 768px) {
@@ -534,52 +467,38 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
             }
             
             h1 {
-                font-size: 1.9em;
+                font-size: 2em;
             }
             
-            header {
-                padding: 30px 20px;
-            }
-            
-            .event-card {
-                padding: 22px;
+            .header-content {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
+    <svg style="display: none;">
+        <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--accent-primary);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+    
     <div class="container">
         <header>
-            <svg style="display:none;">
-                <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-            </svg>
             <div class="header-content">
-                <svg class="moto-icon" viewBox="0 0 24 24">
-                    <path d="M19.44,12.93L16.86,7.76C16.5,7.05 15.77,6.61 14.97,6.61H13.5V5.5A1.5,1.5 0 0,0 12,4A1.5,1.5 0 0,0 10.5,5.5V6.61H9.03C8.23,6.61 7.5,7.05 7.14,7.76L4.56,12.93C4.19,13.66 4.27,14.53 4.77,15.18C5.27,15.83 6.06,16.21 6.89,16.21H8.5V18.5A1.5,1.5 0 0,0 10,20A1.5,1.5 0 0,0 11.5,18.5V16.21H12.5V18.5A1.5,1.5 0 0,0 14,20A1.5,1.5 0 0,0 15.5,18.5V16.21H17.11C17.94,16.21 18.73,15.83 19.23,15.18C19.73,14.53 19.81,13.66 19.44,12.93M12,5.5C12.28,5.5 12.5,5.72 12.5,6V6.61H11.5V6C11.5,5.72 11.72,5.5 12,5.5M8.5,14.71H6.89C6.67,14.71 6.47,14.61 6.34,14.44C6.21,14.27 6.19,14.05 6.28,13.86L8.86,8.69C8.95,8.5 9.15,8.39 9.37,8.39H10.5V14.71H8.5M15.5,14.71H13.5V8.39H14.63C14.85,8.39 15.05,8.5 15.14,8.69L17.72,13.86C17.81,14.05 17.79,14.27 17.66,14.44C17.53,14.61 17.33,14.71 17.11,14.71H15.5M5.5,13A2.5,2.5 0 0,0 3,15.5A2.5,2.5 0 0,0 5.5,18A2.5,2.5 0 0,0 8,15.5A2.5,2.5 0 0,0 5.5,13M5.5,16.5A1,1 0 0,1 4.5,15.5A1,1 0 0,1 5.5,14.5A1,1 0 0,1 6.5,15.5A1,1 0 0,1 5.5,16.5M18.5,13A2.5,2.5 0 0,0 16,15.5A2.5,2.5 0 0,0 18.5,18A2.5,2.5 0 0,0 21,15.5A2.5,2.5 0 0,0 18.5,13M18.5,16.5A1,1 0 0,1 17.5,15.5A1,1 0 0,1 18.5,14.5A1,1 0 0,1 19.5,15.5A1,1 0 0,1 18.5,16.5Z" />
+                <svg class="moto-icon" viewBox="0 0 640 512">
+                    <path d="M448 96c0-35.3-28.7-64-64-64H256c-35.3 0-64 28.7-64 64v32h256V96zM224 144c-17.7 0-32-14.3-32-32V96c0-53 43-96 96-96h64c53 0 96 43 96 96v16h48c35.3 0 64 28.7 64 64v32h32c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32v-32c0-17.7 14.3-32 32-32h32v-32c0-35.3 28.7-64 64-64h48v16c0 17.7 14.3 32 32 32h16zm272 96c8.8 0 16 7.2 16 16s-7.2 16-16 16-16-7.2-16-16 7.2-16 16-16zM144 256c0-8.8-7.2-16-16-16s-16 7.2-16 16 7.2 16 16 16 16-7.2 16-16zm304 0c0-17.7-14.3-32-32-32H224c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32V256zm-48 80c0 8.8-7.2 16-16 16s-16-7.2-16-16v-32c0-8.8 7.2-16 16-16s16 7.2 16 16v32zm-128 0c0 8.8-7.2 16-16 16s-16-7.2-16-16v-32c0-8.8 7.2-16 16-16s16 7.2 16 16v32z"/>
                 </svg>
                 <h1>2026 Moto Events</h1>
             </div>
             <p class="subtitle">Upcoming schedule and gatherings</p>
-            <div class="event-count">{{EVENT_COUNT}} event(s) found</div>
+            <div class="event-count">{event_count} Events Found</div>
         </header>
         
         <div class="events-grid">
-            {{EVENT_CARDS}}
-        </div>
-        
-        {{NO_EVENTS}}
-        
-        <footer>
-            <p>Generated on {{GENERATED_DATE}}</p>
-        </footer>
-    </div>
-</body>
-</html>
 """
     
     # Generate search info HTML (removed - no longer displaying search params in header)
@@ -590,9 +509,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
     if events_data:
         for event in events_data:
             status_class = event['status'].lower()
-            attendees_html = ''.join([f'<span class="attendee-tag">{att}</span>' for att in event['attendees'][:5]])
-            if len(event['attendees']) > 5:
-                attendees_html += f'<span class="attendee-tag">+{len(event["attendees"]) - 5} more</span>'
             
             description_html = f'<div class="event-description">{event["description"]}</div>' if event['description'] else ''
             location_html = f'<div class="detail-row"><span class="detail-icon">📍</span><span>{event["location"]}</span></div>' if event['location'] else ''
@@ -608,16 +524,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
                 </div>
                 {location_html}
                 {description_html}
-                <div class="event-attendees">
-                    <div class="detail-row">
-                        <span class="detail-icon">👥</span>
-                        <div>{attendees_html}</div>
-                    </div>
-                    <div class="organizer-badge">🎯 Organizer: {event['organizer']}</div>
-                </div>
-                <a href="{event['html_link']}" target="_blank" class="view-link">
-                    🔗 View in Calendar
-                </a>
             </div>
             """
     else:
