@@ -495,14 +495,17 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
                 <h1>2026 Moto Events</h1>
             </div>
             <p class="subtitle">Upcoming schedule and gatherings</p>
-            <div class="event-count">{event_count} Events Found</div>
+            <div class="event-count">{{EVENT_COUNT}} Events Found</div>
         </header>
         
         <div class="events-grid">
+{{EVENT_CARDS}}
+        </div>
+{{NO_EVENTS}}
+    </div>
+</body>
+</html>
 """
-    
-    # Generate search info HTML (removed - no longer displaying search params in header)
-    search_info_html = ""
     
     # Generate event cards
     event_cards_html = ""
@@ -544,7 +547,6 @@ def generate_html(events_data, output_file='calendar_events.html', search_params
     html_content = html_template.replace('{{EVENT_COUNT}}', str(len(events_data)))
     html_content = html_content.replace('{{EVENT_CARDS}}', event_cards_html)
     html_content = html_content.replace('{{NO_EVENTS}}', no_events_html)
-    html_content = html_content.replace('{{GENERATED_DATE}}', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     
     # Write to file
     with open(output_file, 'w', encoding='utf-8') as f:
